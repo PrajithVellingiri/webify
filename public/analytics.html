@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Analytics - PNP Inventory System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/enhanced-styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <h4><img src="images/logo.png" alt="PNP Inventory"></h4>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="add-product.html">Add Product</a>
+  <a href="update-products.html">Update Products</a>
+  <a href="analytics.html">Analytics</a>
+  <a href="reorder.html">Reorder Alerts</a>
+  <a href="#" class="logoutBtn">Logout</a>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+  <!-- Topbar -->
+  <div class="topbar d-flex justify-content-between align-items-center">
+    <h4 class="mb-0">Analytics</h4>
+    <span class="userName">Data Insights</span>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="row g-4">
+
+    <!-- Bar Chart -->
+    <div class="col-md-6">
+      <div class="card p-4">
+        <h5 class="mb-3">Planned vs Actual Cost</h5>
+        <canvas id="barChart"></canvas>
+      </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="col-md-6">
+      <div class="card p-4">
+        <h5 class="mb-3">Risk Distribution</h5>
+        <canvas id="pieChart"></canvas>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/main.js"></script>
+
+
+</body>
+</html>

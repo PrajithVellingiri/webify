@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Reorder Alerts - PNP Inventory System</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/enhanced-styles.css" />
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+  <h4><img src="images/logo.png" alt="PNP Inventory"></h4>
+  <a href="dashboard.html">Dashboard</a>
+  <a href="add-product.html">Add Product</a>
+  <a href="update-products.html">Update Products</a>
+  <a href="analytics.html">Analytics</a>
+  <a href="reorder.html">Reorder Alerts</a>
+  <a href="#" class="logoutBtn">Logout</a>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+  <!-- Topbar -->
+  <div class="topbar d-flex justify-content-between align-items-center">
+    <h4 class="mb-0">Reorder & Risk Alerts</h4>
+    <span class="userName">Stock Monitoring System</span>
+  </div>
+
+  <!-- Alerts Section -->
+  <div class="row g-4" id="alertsContainer">
+    <!-- Dynamic alerts will be loaded here -->
+  </div>
+
+  <!-- Detailed Table -->
+  <div class="card p-4 mt-4">
+    <h5 class="mb-3">Reorder Summary Table</h5>
+    <table class="table table-hover">
+      <thead class="table-light">
+        <tr>
+          <th>Item</th>
+          <th>Current Stock</th>
+          <th>Reorder Level</th>
+          <th>Reorder Quantity</th>
+          <th>Risk %</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody id="reorderTableBody">
+        <!-- Dynamic data will be loaded here -->
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="js/main.js"></script>
+
+</body>
+</html>
