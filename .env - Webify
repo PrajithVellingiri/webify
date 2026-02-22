@@ -1,0 +1,3 @@
+MONGODB_URI=mongodb+srv://webify:aUFL1r7F9Yx15e53@cluster0.xfcbalc.mongodb.net/productionDB?retryWrites=true&w=majority
+JWT_SECRET=CHANGE_THIS_TO_NEW_SECRET_KEY_IMMEDIATELY
+PORT=5000
