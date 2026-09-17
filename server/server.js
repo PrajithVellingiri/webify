@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 const rateLimit = require("express-rate-limit");
 require("dotenv").config();
 
@@ -111,9 +112,9 @@ app.use("/api", authRoutes);
 // Protected Product & Dashboard Routes
 app.use("/api", protect, productRoutes);
 
-// Redirect root to login page
+// Serve landing page at root
 app.get("/", (req, res) => {
-  res.redirect("/login.html");
+  res.sendFile(path.join(__dirname, "../public/index.html"));
 });
 
 // 404 Handler for undefined API routes

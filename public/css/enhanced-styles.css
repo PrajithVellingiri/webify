@@ -92,22 +92,52 @@ body {
   text-align: center;
 }
 
-.sidebar-logo-container {
+.brand-header-link {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 12px;
   text-decoration: none;
+  padding: 0 4px;
   margin-bottom: 30px;
 }
 
-.sidebar h4 img,
-.brand-logo-img {
-  max-width: 170px;
-  height: auto;
-  display: block;
-  margin: 0 auto;
-  filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.3));
+.brand-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--primary-gradient);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.4);
+  flex-shrink: 0;
+}
+
+.brand-text-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
+.brand-accent {
+  color: var(--cyan-accent);
+}
+
+.brand-subtitle {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+  margin-top: 2px;
 }
 
 .sidebar-nav {
