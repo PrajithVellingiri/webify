@@ -2,192 +2,202 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Auth - Inventory System</title>
+  <title>Sign In & Register — Webify Inventory Intelligence</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Google Fonts & Custom Styling -->
+  <link rel="stylesheet" href="css/enhanced-styles.css">
 
   <style>
-    body {
-      background: linear-gradient(135deg, #6c757d, #495057);
+    .auth-page {
+      min-height: 100vh;
       display: flex;
-      justify-content: center;
       align-items: center;
-      height: 100vh;
-      font-family: Arial, sans-serif;
+      justify-content: center;
+      padding: 30px 16px;
     }
 
-    .container-box {
+    .auth-wrapper {
+      width: 100%;
+      max-width: 460px;
+    }
+
+    .auth-card {
+      background: rgba(17, 24, 39, 0.85);
+      backdrop-filter: blur(25px);
+      -webkit-backdrop-filter: blur(25px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      padding: 40px 36px;
       position: relative;
-      width: 800px;
-      max-width: 100%;
-      min-height: 500px;
-      background: #fff;
-      border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.2);
     }
 
-    .form-container {
+    .auth-card::before {
+      content: '';
       position: absolute;
       top: 0;
-      height: 100%;
-      width: 50%;
-      transition: all 0.6s ease-in-out;
-      padding: 50px;
-    }
-
-    .login-container {
       left: 0;
-      z-index: 2;
-    }
-
-    .signup-container {
-      left: 0;
-      opacity: 0;
-      z-index: 1;
-    }
-
-    .container-box.active .login-container {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-
-    .container-box.active .signup-container {
-      transform: translateX(100%);
-      opacity: 1;
-      z-index: 5;
-    }
-
-    .overlay-container {
-      position: absolute;
-      top: 0;
-      left: 50%;
-      width: 50%;
-      height: 100%;
-      overflow: hidden;
-      transition: transform 0.6s ease-in-out;
-      z-index: 100;
-    }
-
-    .container-box.active .overlay-container {
-      transform: translateX(-100%);
-    }
-
-    .overlay {
-      background: linear-gradient(135deg, #6c757d, #495057);
-      color: #fff;
-      position: relative;
-      left: -100%;
-      height: 100%;
-      width: 200%;
-      transform: translateX(0);
-      transition: transform 0.6s ease-in-out;
-      display: flex;
-    }
-
-    .container-box.active .overlay {
-      transform: translateX(50%);
-    }
-
-    .overlay-panel {
-      position: absolute;
-      width: 50%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      text-align: center;
-      padding: 0 40px;
-    }
-
-    .overlay-left {
-      transform: translateX(-20%);
-    }
-
-    .container-box.active .overlay-left {
-      transform: translateX(0);
-    }
-
-    .overlay-right {
       right: 0;
-      transform: translateX(0);
+      height: 3px;
+      background: var(--primary-gradient);
     }
 
-    .container-box.active .overlay-right {
-      transform: translateX(20%);
+    .auth-header {
+      text-align: center;
+      margin-bottom: 30px;
     }
 
-    button.ghost {
-      background: transparent;
-      border: 1px solid #fff;
+    .auth-brand {
+      display: inline-block;
+      margin-bottom: 16px;
+    }
+
+    .auth-brand img {
+      max-width: 180px;
+      height: auto;
+      filter: drop-shadow(0 4px 12px rgba(59, 130, 246, 0.35));
+    }
+
+    .auth-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-secondary);
+      margin: 0;
+    }
+
+    /* Auth Switch Tabs */
+    .auth-tabs {
+      display: flex;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+      margin-bottom: 26px;
+      border: 1px solid var(--border-color);
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      text-align: center;
+      padding: 9px 12px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .auth-tab-btn.active {
+      background: var(--primary-accent);
       color: #fff;
-      padding: 8px 20px;
-      border-radius: 20px;
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.4);
+    }
+
+    .auth-panel {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .auth-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
-<body>
+<body class="auth-page">
 
-<div class="container-box" id="container">
-
-  <!-- Login -->
-  <div class="form-container login-container">
-    <h3 class="mb-4">Login</h3>
-    <form id="loginForm">
-  <input id="loginEmail" class="form-control mb-3" type="email" placeholder="Email" required>
-  <input id="loginPassword" class="form-control mb-3" type="password" placeholder="Password" required>
-  <button class="btn btn-primary w-100">Login</button>
-</form>
-
-  </div>
-
-  <!-- Signup -->
-  <div class="form-container signup-container">
-    <h3 class="mb-4">Create Account</h3>
-    <form id="signupForm">
-  <input id="signupName" class="form-control mb-3" type="text" placeholder="Full Name" required>
-  <input id="signupEmail" class="form-control mb-3" type="email" placeholder="Email" required>
-  <input id="signupPassword" class="form-control mb-3" type="password" placeholder="Password" required>
-  <button class="btn btn-success w-100">Sign Up</button>
-</form>
-
-  </div>
-
-  <!-- Overlay -->
-  <div class="overlay-container">
-    <div class="overlay">
-      <div class="overlay-panel overlay-left">
-        <h3>Welcome Back!</h3>
-        <p>Already have an account?</p>
-        <button class="ghost" id="loginBtn">Login</button>
+  <div class="auth-wrapper">
+    <div class="auth-card">
+      
+      <div class="auth-header">
+        <div class="auth-brand">
+          <img src="images/logo.png" alt="Webify Inventory">
+        </div>
+        <p class="auth-subtitle">Production Risk & Inventory Management Portal</p>
       </div>
-      <div class="overlay-panel overlay-right">
-        <h3>Hello, Friend!</h3>
-        <p>Don't have an account?</p>
-        <button class="ghost" id="signupBtn">Sign Up</button>
+
+      <!-- Tab Switcher -->
+      <div class="auth-tabs">
+        <div class="auth-tab-btn active" id="tabLogin" onclick="switchTab('login')">Sign In</div>
+        <div class="auth-tab-btn" id="tabSignup" onclick="switchTab('signup')">Register</div>
       </div>
+
+      <!-- Login Form Panel -->
+      <div class="auth-panel active" id="loginPanel">
+        <form id="loginForm">
+          <div class="mb-3">
+            <label class="form-label" for="loginEmail">Email Address</label>
+            <input id="loginEmail" class="form-control" type="email" placeholder="name@company.com" required autocomplete="email">
+          </div>
+          <div class="mb-4">
+            <label class="form-label" for="loginPassword">Password</label>
+            <input id="loginPassword" class="form-control" type="password" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn btn-primary w-100 py-2">
+            Sign In to Dashboard
+          </button>
+        </form>
+      </div>
+
+      <!-- Signup Form Panel -->
+      <div class="auth-panel" id="signupPanel">
+        <form id="signupForm">
+          <div class="mb-3">
+            <label class="form-label" for="signupName">Full Name</label>
+            <input id="signupName" class="form-control" type="text" placeholder="John Doe" required autocomplete="name">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="signupEmail">Work Email</label>
+            <input id="signupEmail" class="form-control" type="email" placeholder="john@company.com" required autocomplete="email">
+          </div>
+          <div class="mb-4">
+            <label class="form-label" for="signupPassword">Password</label>
+            <input id="signupPassword" class="form-control" type="password" placeholder="Minimum 6 characters" required autocomplete="new-password">
+          </div>
+          <button type="submit" class="btn btn-success w-100 py-2">
+            Create Account
+          </button>
+        </form>
+      </div>
+
+      <div class="mt-4 pt-3 text-center" style="border-top: 1px solid var(--border-color);">
+        <small class="text-secondary" style="font-size: 0.78rem;">
+          Enterprise Grade • JWT Encrypted • Real-time Planning
+        </small>
+      </div>
+
     </div>
   </div>
 
-</div>
+  <script>
+    function switchTab(tab) {
+      const loginTab = document.getElementById("tabLogin");
+      const signupTab = document.getElementById("tabSignup");
+      const loginPanel = document.getElementById("loginPanel");
+      const signupPanel = document.getElementById("signupPanel");
 
-<script>
-  const container = document.getElementById("container");
-  const signupBtn = document.getElementById("signupBtn");
-  const loginBtn = document.getElementById("loginBtn");
-
-  signupBtn.addEventListener("click", () => {
-    container.classList.add("active");
-  });
-
-  loginBtn.addEventListener("click", () => {
-    container.classList.remove("active");
-  });
-</script>
-<script src="js/main.js"></script>
+      if (tab === 'login') {
+        loginTab.classList.add("active");
+        signupTab.classList.remove("active");
+        loginPanel.classList.add("active");
+        signupPanel.classList.remove("active");
+      } else {
+        signupTab.classList.add("active");
+        loginTab.classList.remove("active");
+        signupPanel.classList.add("active");
+        loginPanel.classList.remove("active");
+      }
+    }
+  </script>
+  <script src="js/main.js"></script>
 
 </body>
 </html>

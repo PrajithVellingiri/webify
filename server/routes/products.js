@@ -8,6 +8,8 @@ router.post("/products", async (req, res) => {
   try {
     const {
       itemName,
+      category,
+      sku,
       plannedQty,
       plannedRate,
       actualQty,
@@ -22,27 +24,36 @@ router.post("/products", async (req, res) => {
     if (!itemName || itemName.trim().length === 0) {
       return res.status(400).json({ message: "Item name is required" });
     }
-    if (plannedQty < 0 || plannedRate < 0 || actualQty < 0 || actualRate < 0) {
-      return res.status(400).json({ message: "Quantities and rates must be positive" });
+    const numPlannedQty = Number(plannedQty) || 0;
+    const numPlannedRate = Number(plannedRate) || 0;
+    const numActualQty = Number(actualQty) || 0;
+    const numActualRate = Number(actualRate) || 0;
+    const numCurrentStock = Number(currentStock) || 0;
+    const numDailyConsumption = Number(dailyConsumption) || 0;
+    const numLeadTime = Number(leadTime) || 0;
+    const numSafetyStock = Number(safetyStock) || 0;
+
+    if (numPlannedQty < 0 || numPlannedRate < 0 || numActualQty < 0 || numActualRate < 0) {
+      return res.status(400).json({ message: "Quantities and rates must be positive numbers" });
     }
-    if (currentStock < 0 || dailyConsumption < 0 || leadTime < 0 || safetyStock < 0) {
-      return res.status(400).json({ message: "Stock values must be positive" });
+    if (numCurrentStock < 0 || numDailyConsumption < 0 || numLeadTime < 0 || numSafetyStock < 0) {
+      return res.status(400).json({ message: "Stock parameters must be positive numbers" });
     }
-    if (leadTime > 365) {
+    if (numLeadTime > 365) {
       return res.status(400).json({ message: "Lead time cannot exceed 365 days" });
     }
 
     // 🧮 Calculations
-    const plannedAmount = plannedQty * plannedRate;
-    const actualAmount = actualQty * actualRate;
+    const plannedAmount = numPlannedQty * numPlannedRate;
+    const actualAmount = numActualQty * numActualRate;
     const variance = actualAmount - plannedAmount;
 
-    const reorderLevel = dailyConsumption * leadTime + safetyStock;
-    const reorderQty = Math.max(0, reorderLevel - currentStock);
+    const reorderLevel = numDailyConsumption * numLeadTime + numSafetyStock;
+    const reorderQty = Math.max(0, reorderLevel - numCurrentStock);
 
     let riskScore = 0;
     if (reorderLevel > 0) {
-      riskScore = ((reorderLevel - currentStock) / reorderLevel) * 100;
+      riskScore = ((reorderLevel - numCurrentStock) / reorderLevel) * 100;
     }
     riskScore = Math.min(100, Math.max(0, riskScore));
 
@@ -53,17 +64,21 @@ router.post("/products", async (req, res) => {
       riskCategory = "Warning";
     }
 
+    const generatedSku = (sku && sku.trim()) || `SKU-${Date.now().toString(36).toUpperCase()}`;
+
     const product = await Product.create({
       userId: req.user,
       itemName: itemName.trim(),
-      plannedQty,
-      plannedRate,
-      actualQty,
-      actualRate,
-      currentStock,
-      dailyConsumption,
-      leadTime,
-      safetyStock,
+      category: (category && category.trim()) || "General",
+      sku: generatedSku,
+      plannedQty: numPlannedQty,
+      plannedRate: numPlannedRate,
+      actualQty: numActualQty,
+      actualRate: numActualRate,
+      currentStock: numCurrentStock,
+      dailyConsumption: numDailyConsumption,
+      leadTime: numLeadTime,
+      safetyStock: numSafetyStock,
       plannedAmount,
       actualAmount,
       variance,
@@ -76,36 +91,59 @@ router.post("/products", async (req, res) => {
     res.status(201).json(product);
   } catch (error) {
     console.error("Add product error:", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Failed to add product: " + error.message });
   }
 });
 
-// 🔵 GET /api/products
+// 🔵 GET /api/products (with search, category/risk filtering, and sorting)
 router.get("/products", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 50;
     const skip = (page - 1) * limit;
 
-    const products = await Product.find({ userId: req.user })
-      .sort({ createdAt: -1 })
+    const query = { userId: req.user };
+
+    // Search by item name, SKU, or category
+    if (req.query.search && req.query.search.trim().length > 0) {
+      const searchRegex = new RegExp(req.query.search.trim(), "i");
+      query.$or = [
+        { itemName: searchRegex },
+        { sku: searchRegex },
+        { category: searchRegex },
+      ];
+    }
+
+    // Filter by risk category
+    if (req.query.riskCategory && req.query.riskCategory !== "all") {
+      query.riskCategory = req.query.riskCategory;
+    }
+
+    // Dynamic sorting
+    const sortBy = req.query.sortBy || "createdAt";
+    const order = req.query.order === "asc" ? 1 : -1;
+    const sortOptions = {};
+    sortOptions[sortBy] = order;
+
+    const products = await Product.find(query)
+      .sort(sortOptions)
       .limit(limit)
       .skip(skip);
-    
-    const total = await Product.countDocuments({ userId: req.user });
-    
+
+    const total = await Product.countDocuments(query);
+
     res.json({
       products,
       pagination: {
         page,
         limit,
         total,
-        pages: Math.ceil(total / limit)
-      }
+        pages: Math.ceil(total / limit) || 1,
+      },
     });
   } catch (error) {
     console.error("Get products error:", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Failed to load products" });
   }
 });
 
@@ -185,6 +223,8 @@ router.put("/products/:id", async (req, res) => {
   try {
     const {
       itemName,
+      category,
+      sku,
       plannedQty,
       plannedRate,
       actualQty,
@@ -197,13 +237,11 @@ router.put("/products/:id", async (req, res) => {
 
     // Validate ObjectId
     if (!req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
-      console.log("Invalid ObjectId format");
       return res.status(400).json({ message: "Invalid product ID" });
     }
 
     const product = await Product.findOne({ _id: req.params.id, userId: req.user });
     if (!product) {
-      console.log("Product not found");
       return res.status(404).json({ message: "Product not found" });
     }
 
@@ -211,26 +249,36 @@ router.put("/products/:id", async (req, res) => {
     if (!itemName || itemName.trim().length === 0) {
       return res.status(400).json({ message: "Item name is required" });
     }
-    if (plannedQty < 0 || plannedRate < 0 || actualQty < 0 || actualRate < 0) {
-      return res.status(400).json({ message: "Quantities and rates must be positive" });
+
+    const numPlannedQty = Number(plannedQty) || 0;
+    const numPlannedRate = Number(plannedRate) || 0;
+    const numActualQty = Number(actualQty) || 0;
+    const numActualRate = Number(actualRate) || 0;
+    const numCurrentStock = Number(currentStock) || 0;
+    const numDailyConsumption = Number(dailyConsumption) || 0;
+    const numLeadTime = Number(leadTime) || 0;
+    const numSafetyStock = Number(safetyStock) || 0;
+
+    if (numPlannedQty < 0 || numPlannedRate < 0 || numActualQty < 0 || numActualRate < 0) {
+      return res.status(400).json({ message: "Quantities and rates must be positive numbers" });
     }
-    if (currentStock < 0 || dailyConsumption < 0 || leadTime < 0 || safetyStock < 0) {
-      return res.status(400).json({ message: "Stock values must be positive" });
+    if (numCurrentStock < 0 || numDailyConsumption < 0 || numLeadTime < 0 || numSafetyStock < 0) {
+      return res.status(400).json({ message: "Stock parameters must be positive numbers" });
     }
-    if (leadTime > 365) {
+    if (numLeadTime > 365) {
       return res.status(400).json({ message: "Lead time cannot exceed 365 days" });
     }
 
     // Calculations
-    const plannedAmount = plannedQty * plannedRate;
-    const actualAmount = actualQty * actualRate;
+    const plannedAmount = numPlannedQty * numPlannedRate;
+    const actualAmount = numActualQty * numActualRate;
     const variance = actualAmount - plannedAmount;
-    const reorderLevel = dailyConsumption * leadTime + safetyStock;
-    const reorderQty = Math.max(0, reorderLevel - currentStock);
+    const reorderLevel = numDailyConsumption * numLeadTime + numSafetyStock;
+    const reorderQty = Math.max(0, reorderLevel - numCurrentStock);
     
     let riskScore = 0;
     if (reorderLevel > 0) {
-      riskScore = ((reorderLevel - currentStock) / reorderLevel) * 100;
+      riskScore = ((reorderLevel - numCurrentStock) / reorderLevel) * 100;
     }
     riskScore = Math.min(100, Math.max(0, riskScore));
 
@@ -239,14 +287,16 @@ router.put("/products/:id", async (req, res) => {
     else if (riskScore >= 40) riskCategory = "Warning";
 
     product.itemName = itemName.trim();
-    product.plannedQty = plannedQty;
-    product.plannedRate = plannedRate;
-    product.actualQty = actualQty;
-    product.actualRate = actualRate;
-    product.currentStock = currentStock;
-    product.dailyConsumption = dailyConsumption;
-    product.leadTime = leadTime;
-    product.safetyStock = safetyStock;
+    if (category) product.category = category.trim();
+    if (sku) product.sku = sku.trim();
+    product.plannedQty = numPlannedQty;
+    product.plannedRate = numPlannedRate;
+    product.actualQty = numActualQty;
+    product.actualRate = numActualRate;
+    product.currentStock = numCurrentStock;
+    product.dailyConsumption = numDailyConsumption;
+    product.leadTime = numLeadTime;
+    product.safetyStock = numSafetyStock;
     product.plannedAmount = plannedAmount;
     product.actualAmount = actualAmount;
     product.variance = variance;
@@ -256,11 +306,10 @@ router.put("/products/:id", async (req, res) => {
     product.riskCategory = riskCategory;
 
     await product.save();
-    console.log("Product updated successfully");
     res.json(product);
   } catch (error) {
-    console.error("Update product error:", error);
-    res.status(500).json({ message: "Server error: " + error.message });
+    console.error("Update product error:", error.message);
+    res.status(500).json({ message: "Failed to update product: " + error.message });
   }
 });
 

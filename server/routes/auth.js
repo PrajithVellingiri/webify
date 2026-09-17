@@ -7,9 +7,15 @@ const router = express.Router();
 
 // 🔐 Generate JWT
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+  const secret = process.env.JWT_SECRET || "webify_super_secret_fallback_key_2026";
+  return jwt.sign({ id }, secret, {
     expiresIn: "7d",
   });
+};
+
+// Simple email regex
+const isValidEmail = (email) => {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).toLowerCase());
 };
 
 // 🟢 SIGNUP
@@ -21,15 +27,28 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    const userExists = await User.findOne({ email });
+    if (name.trim().length < 2) {
+      return res.status(400).json({ message: "Name must be at least 2 characters" });
+    }
+
+    if (!isValidEmail(email)) {
+      return res.status(400).json({ message: "Please enter a valid email address" });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const userExists = await User.findOne({ email: normalizedEmail });
 
     if (userExists) {
-      return res.status(400).json({ message: "User already exists" });
+      return res.status(400).json({ message: "An account with this email already exists" });
     }
 
     const user = await User.create({
-      name,
-      email,
+      name: name.trim(),
+      email: normalizedEmail,
       password,
     });
 
@@ -41,7 +60,7 @@ router.post("/signup", async (req, res) => {
     });
   } catch (error) {
     console.error("Signup error:", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Unable to create account. Please try again later." });
   }
 });
 
@@ -50,7 +69,12 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password are required" });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+    const user = await User.findOne({ email: normalizedEmail });
 
     if (user && (await user.matchPassword(password))) {
       res.json({
@@ -64,7 +88,7 @@ router.post("/login", async (req, res) => {
     }
   } catch (error) {
     console.error("Login error:", error.message);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Unable to login. Please try again later." });
   }
 });
 

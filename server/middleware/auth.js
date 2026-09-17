@@ -12,15 +12,15 @@ const protect = (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
 
       // Verify token
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const secret = process.env.JWT_SECRET || "webify_super_secret_fallback_key_2026";
+      const decoded = jwt.verify(token, secret);
 
       // Attach userId to request
       req.user = decoded.id;
 
       next();
     } catch (error) {
-      console.error("Token verification failed:", error.message);
-      return res.status(401).json({ message: "Not authorized, token failed" });
+      return res.status(401).json({ message: "Session expired or invalid token. Please log in again." });
     }
   }
 

@@ -2,117 +2,225 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Update Products - PNP Inventory System</title>
+  <title>Manage Inventory — Webify Inventory Intelligence</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom Design System -->
   <link rel="stylesheet" href="css/enhanced-styles.css" />
 </head>
 <body>
 
+<!-- Mobile Overlay -->
+<div class="sidebar-overlay"></div>
+
+<!-- Sidebar Navigation -->
 <div class="sidebar">
-  <h4><img src="images/logo.png" alt="PNP Inventory"></h4>
-  <a href="dashboard.html">Dashboard</a>
-  <a href="add-product.html">Add Product</a>
-  <a href="update-products.html">Update Products</a>
-  <a href="analytics.html">Analytics</a>
-  <a href="reorder.html">Reorder Alerts</a>
-  <a href="#" class="logoutBtn">Logout</a>
+  <div class="sidebar-logo-container">
+    <img src="images/logo.png" alt="Webify" class="brand-logo-img">
+  </div>
+
+  <div class="sidebar-nav">
+    <a href="dashboard.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      <span>Dashboard</span>
+    </a>
+    <a href="add-product.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+      <span>Add Product</span>
+    </a>
+    <a href="update-products.html" class="active">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+      <span>Manage Products</span>
+    </a>
+    <a href="analytics.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+      <span>Analytics</span>
+    </a>
+    <a href="reorder.html">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+      <span>Reorder Alerts</span>
+    </a>
+  </div>
+
+  <div class="sidebar-footer">
+    <a href="#" id="logoutBtn" class="logout-link">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+      <span>Sign Out</span>
+    </a>
+  </div>
 </div>
 
+<!-- Main Content -->
 <div class="main">
-  <div class="topbar d-flex justify-content-between align-items-center">
-    <h4 class="mb-0">Update Products</h4>
-    <span class="userName">Welcome User</span>
+  
+  <div class="topbar">
+    <div class="topbar-left">
+      <button class="mobile-toggle" aria-label="Toggle navigation">☰</button>
+      <div>
+        <h4 class="mb-0">Inventory Master Data</h4>
+        <span style="font-size: 0.8rem; color: var(--text-secondary);">Edit, Search & Modify All Inventory Records</span>
+      </div>
+    </div>
+
+    <div class="topbar-user">
+      <div class="user-badge">
+        <div class="user-avatar userAvatarInitial">U</div>
+        <span class="userName">Loading...</span>
+      </div>
+    </div>
   </div>
 
-  <div class="card p-4">
-    <h5 class="mb-3">All Products</h5>
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          <th>Item</th>
-          <th>Planned</th>
-          <th>Actual</th>
-          <th>Stock</th>
-          <th>Risk</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody id="productsTableBody">
-      </tbody>
-    </table>
+  <div class="card">
+    
+    <!-- Filter and Search Header -->
+    <div class="filter-bar">
+      <div class="search-input-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="updateSearchInput" class="form-control" placeholder="Search by name, SKU, or category...">
+      </div>
+
+      <div style="min-width: 170px;">
+        <select id="riskFilterSelect" class="form-select">
+          <option value="all">All Risk Levels</option>
+          <option value="Critical">🔴 Critical Only</option>
+          <option value="Warning">🟡 Warning Only</option>
+          <option value="Safe">🟢 Safe Only</option>
+        </select>
+      </div>
+
+      <a href="add-product.html" class="btn btn-primary btn-sm">
+        + Add New Product
+      </a>
+    </div>
+
+    <!-- Data Table -->
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>Product / SKU</th>
+            <th>Planned Budget</th>
+            <th>Actual Spend</th>
+            <th>Stock Status</th>
+            <th>Risk Rating</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="productsTableBody">
+          <!-- Dynamic products loaded here -->
+        </tbody>
+      </table>
+    </div>
+
   </div>
 </div>
 
-<!-- Edit Modal -->
-<div class="modal fade" id="editModal" tabindex="-1">
-  <div class="modal-dialog modal-lg">
+<!-- Edit Product Modal -->
+<div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">Edit Product</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <h5 class="modal-title" id="editModalLabel">Edit Product Specifications</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form id="editForm">
           <input type="hidden" id="editProductId">
           
-          <div class="mb-3">
-            <label class="form-label">Item Name</label>
-            <input id="editItemName" type="text" class="form-control" required>
-          </div>
-
-          <h6 class="mt-3 mb-2">Production Planning</h6>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Planned Quantity</label>
-              <input id="editPlannedQty" type="number" class="form-control" required>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label" for="editItemName">Item Name *</label>
+              <input id="editItemName" type="text" class="form-control" required>
             </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Planned Rate</label>
-              <input id="editPlannedRate" type="number" class="form-control" required>
+            <div class="col-md-3">
+              <label class="form-label" for="editSku">SKU Code</label>
+              <input id="editSku" type="text" class="form-control">
+            </div>
+            <div class="col-md-3">
+              <label class="form-label" for="editCategory">Category</label>
+              <input id="editCategory" type="text" class="form-control">
             </div>
           </div>
 
-          <h6 class="mt-3 mb-2">Actual Consumption</h6>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Actual Quantity</label>
-              <input id="editActualQty" type="number" class="form-control" required>
+          <h6 class="section-title">Production Planning</h6>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label" for="editPlannedQty">Planned Quantity *</label>
+              <input id="editPlannedQty" type="number" min="0" step="any" class="form-control" required>
             </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Actual Rate</label>
-              <input id="editActualRate" type="number" class="form-control" required>
-            </div>
-          </div>
-
-          <h6 class="mt-3 mb-2">Inventory Details</h6>
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Current Stock</label>
-              <input id="editCurrentStock" type="number" class="form-control" required>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Daily Consumption</label>
-              <input id="editDailyConsumption" type="number" class="form-control" required>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Lead Time (Days)</label>
-              <input id="editLeadTime" type="number" class="form-control" required>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label class="form-label">Safety Stock</label>
-              <input id="editSafetyStock" type="number" class="form-control" required>
+            <div class="col-md-6">
+              <label class="form-label" for="editPlannedRate">Planned Rate (₹) *</label>
+              <input id="editPlannedRate" type="number" min="0" step="any" class="form-control" required>
             </div>
           </div>
 
-          <button type="submit" class="btn btn-primary w-100 mt-3">Update Product</button>
+          <h6 class="section-title">Actual Consumption</h6>
+          <div class="row g-3 mb-3">
+            <div class="col-md-6">
+              <label class="form-label" for="editActualQty">Actual Quantity *</label>
+              <input id="editActualQty" type="number" min="0" step="any" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="editActualRate">Actual Rate (₹) *</label>
+              <input id="editActualRate" type="number" min="0" step="any" class="form-control" required>
+            </div>
+          </div>
+
+          <h6 class="section-title">Inventory Controls</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label" for="editCurrentStock">Current Stock *</label>
+              <input id="editCurrentStock" type="number" min="0" class="form-control" required>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label" for="editDailyConsumption">Daily Consumption *</label>
+              <input id="editDailyConsumption" type="number" min="0" class="form-control" required>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label" for="editLeadTime">Lead Time (Days) *</label>
+              <input id="editLeadTime" type="number" min="0" max="365" class="form-control" required>
+            </div>
+            <div class="col-md-3 col-sm-6">
+              <label class="form-label" for="editSafetyStock">Safety Stock *</label>
+              <input id="editSafetyStock" type="number" min="0" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary px-4">Update Specifications</button>
+          </div>
         </form>
       </div>
     </div>
   </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Modern Delete Confirmation Modal -->
+<div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content" style="border-color: rgba(239, 68, 68, 0.3);">
+      <div class="modal-header" style="border-bottom-color: rgba(239, 68, 68, 0.2);">
+        <h5 class="modal-title text-danger" style="display: flex; align-items: center; gap: 8px;">
+          <span>⚠️</span> Confirm Deletion
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to remove <strong id="deleteProductName" class="text-white">this product</strong> from your inventory database?</p>
+        <p class="text-secondary mb-0" style="font-size: 0.85rem;">This action is permanent and will remove associated production tracking history.</p>
+      </div>
+      <div class="modal-footer" style="border-top-color: rgba(239, 68, 68, 0.2);">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Keep Product</button>
+        <button type="button" id="confirmDeleteBtn" class="btn btn-danger">Delete Product</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

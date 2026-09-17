@@ -2,86 +2,185 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Dashboard - PNP Inventory System</title>
+  <title>Executive Dashboard — Webify Inventory Intelligence</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
+  
+  <!-- Bootstrap 5.3 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Custom Design System -->
   <link rel="stylesheet" href="css/enhanced-styles.css" />
 </head>
 
 <body>
 
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay"></div>
+
+  <!-- Sidebar Navigation -->
   <div class="sidebar">
-    <h4><img src="images/logo.png" alt="PNP Inventory"></h4>
-    <a href="dashboard.html">Dashboard</a>
-    <a href="add-product.html">Add Product</a>
-    <a href="update-products.html">Update Products</a>
-    <a href="analytics.html">Analytics</a>
-    <a href="reorder.html">Reorder Alerts</a>
-    <a href="#" id="logoutBtn">Logout</a>
+    <div class="sidebar-logo-container">
+      <img src="images/logo.png" alt="Webify" class="brand-logo-img">
+    </div>
+
+    <div class="sidebar-nav">
+      <a href="dashboard.html" class="active">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span>Dashboard</span>
+      </a>
+      <a href="add-product.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+        <span>Add Product</span>
+      </a>
+      <a href="update-products.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+        <span>Manage Products</span>
+      </a>
+      <a href="analytics.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+        <span>Analytics</span>
+      </a>
+      <a href="reorder.html">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+        <span>Reorder Alerts</span>
+      </a>
+    </div>
+
+    <div class="sidebar-footer">
+      <a href="#" id="logoutBtn" class="logout-link">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        <span>Sign Out</span>
+      </a>
+    </div>
   </div>
 
+  <!-- Main Workspace -->
   <div class="main">
+    
+    <!-- Topbar -->
     <div class="topbar">
-      <h4 class="mb-0">Dashboard</h4>
-      <span class="userName">Welcome User</span>
-    </div>
-
-    <div class="row g-4">
-      <div class="col-md-3">
-        <div class="card text-center">
-          <h6>Total Planned Cost</h6>
-          <h4 id="plannedCost" style="font-size: 2rem; font-weight: bold;">₹0</h4>
+      <div class="topbar-left">
+        <button class="mobile-toggle" aria-label="Toggle navigation">☰</button>
+        <div>
+          <h4 class="mb-0">Executive Dashboard</h4>
+          <span style="font-size: 0.8rem; color: var(--text-secondary);">Real-Time Production & Inventory Performance</span>
         </div>
       </div>
 
-      <div class="col-md-3">
-        <div class="card text-center">
-          <h6>Total Actual Cost</h6>
-          <h4 id="actualCost" style="font-size: 2rem; font-weight: bold;">₹0</h4>
+      <div class="topbar-user">
+        <div class="system-status-indicator">
+          <span class="status-dot"></span>
+          <span>API Connected</span>
         </div>
-      </div>
-
-      <div class="col-md-3">
-        <div class="card text-center">
-          <h6>Total Variance</h6>
-          <h4 id="variance" style="color: #dc3545; font-size: 2rem; font-weight: bold;">₹0</h4>
-        </div>
-      </div>
-
-      <div class="col-md-3">
-        <div class="card text-center">
-          <h6>Critical Items</h6>
-          <h4 id="criticalCount" style="color: #dc3545; font-size: 2rem; font-weight: bold;">0</h4>
+        <div class="user-badge">
+          <div class="user-avatar userAvatarInitial">U</div>
+          <span class="userName">Loading...</span>
         </div>
       </div>
     </div>
 
-    <div class="card mt-4">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h5 class="text-start mb-0">Recent Products</h5>
-        <button class="btn btn-success btn-sm" onclick="downloadCSV()">
-          📥 Download CSV
-        </button>
+    <!-- KPI Summary Row -->
+    <div class="row g-4 mb-4">
+      
+      <!-- Total Planned Cost -->
+      <div class="col-xl-3 col-sm-6">
+        <div class="kpi-card">
+          <div class="kpi-header">
+            <h6>Planned Production</h6>
+            <div class="kpi-icon" style="color: #3b82f6;">📋</div>
+          </div>
+          <div class="kpi-value" id="plannedCost">₹0</div>
+          <p class="kpi-subtitle">
+            <span>Target budget allocation</span>
+          </p>
+        </div>
       </div>
-      <table class="table table-hover">
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Planned</th>
-            <th>Actual</th>
-            <th>Variance</th>
-            <th>Risk</th>
-          </tr>
-        </thead>
-        <tbody id="productsTable">
-        </tbody>
-      </table>
+
+      <!-- Total Actual Cost -->
+      <div class="col-xl-3 col-sm-6">
+        <div class="kpi-card kpi-actual">
+          <div class="kpi-header">
+            <h6>Actual Consumption</h6>
+            <div class="kpi-icon" style="color: #06b6d4;">📊</div>
+          </div>
+          <div class="kpi-value" id="actualCost">₹0</div>
+          <p class="kpi-subtitle">
+            <span>Recorded operational spend</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Total Variance -->
+      <div class="col-xl-3 col-sm-6">
+        <div class="kpi-card kpi-variance">
+          <div class="kpi-header">
+            <h6>Cost Variance</h6>
+            <div class="kpi-icon" style="color: #f59e0b;">⚖️</div>
+          </div>
+          <div class="kpi-value" id="variance">₹0</div>
+          <p class="kpi-subtitle">
+            <span>Actual vs Planned difference</span>
+          </p>
+        </div>
+      </div>
+
+      <!-- Critical Items -->
+      <div class="col-xl-3 col-sm-6">
+        <div class="kpi-card kpi-critical">
+          <div class="kpi-header">
+            <h6>Critical Risk Items</h6>
+            <div class="kpi-icon" style="color: #ef4444;">🚨</div>
+          </div>
+          <div class="kpi-value" id="criticalCount">0</div>
+          <p class="kpi-subtitle">
+            <span>Products below safety threshold</span>
+          </p>
+        </div>
+      </div>
+
     </div>
+
+    <!-- Recent Products Table Section -->
+    <div class="card">
+      <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+          <h5 class="mb-1">Recent Inventory Planning</h5>
+          <span style="font-size: 0.82rem; color: var(--text-secondary);">Last updated products and production variance</span>
+        </div>
+        
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <div class="search-input-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="dashboardSearchInput" class="form-control form-control-sm" placeholder="Search recent items...">
+          </div>
+          <button class="btn btn-success btn-sm" onclick="downloadCSV()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+            <span>Export CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>Item Name / Code</th>
+              <th>Planned Amount</th>
+              <th>Actual Amount</th>
+              <th>Variance</th>
+              <th>Risk Status</th>
+            </tr>
+          </thead>
+          <tbody id="productsTable">
+            <!-- Dynamic data from API -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>
