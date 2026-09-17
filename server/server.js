@@ -96,9 +96,6 @@ app.get("/api", (req, res) => {
   });
 });
 
-// 🔥 SERVE FRONTEND FILES
-app.use(express.static("public"));
-
 // Apply rate limiting to API
 app.use("/api", generalLimiter);
 
@@ -112,9 +109,15 @@ app.use("/api", authRoutes);
 // Protected Product & Dashboard Routes
 app.use("/api", protect, productRoutes);
 
-// Serve landing page at root
+// Root endpoint — Pure API Status
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
+  res.json({
+    name: "Webify IMS — Inventory Management System API",
+    status: "online",
+    version: "1.0.0",
+    health: "/health",
+    endpoints: "/api"
+  });
 });
 
 // 404 Handler for undefined API routes

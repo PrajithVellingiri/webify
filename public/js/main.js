@@ -9,10 +9,17 @@ const getApiBase = () => {
   if (window.API_BASE_URL) return window.API_BASE_URL;
   if (localStorage.getItem("CUSTOM_API_URL")) return localStorage.getItem("CUSTOM_API_URL");
   
-  const isLocalHost = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  const hostname = window.location.hostname;
+  const isLocalHost = hostname === "localhost" || hostname === "127.0.0.1";
   if (isLocalHost && window.location.port !== "5000" && window.location.port !== "") {
     return "http://localhost:5000/api";
   }
+
+  // When frontend is hosted separately on Vercel or any client domain:
+  if (hostname.includes("vercel.app") || (!isLocalHost && hostname !== "webify-backend-vsu3.onrender.com")) {
+    return "https://webify-backend-vsu3.onrender.com/api";
+  }
+
   return "/api";
 };
 
